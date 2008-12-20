@@ -1,0 +1,91 @@
+*pty.txt*
+
+pty.vim 
+Remote terminal support for vim thanks to python.
+
+
+You need VIM with python support and urxvt (rxvt-unicode) to use this script.
+<http://software.schmorp.de/pkg/rxvt-unicode.html>
+
+Furthermore this script only provides python functions, so some knowledge about
+this (very fine) language is usefull, but not required to benefit from it.
+
+Calling the python function rxvtSend('text','cmd') the first time will spawn
+a subprocesses given by the shell command 'cmd' in a new terminal window and
+pass 'text' to it. Subsequent calls with the same 'cmd' argument will send further
+text to the this subprocess. If you close the terminal window, the child
+process stays alive and the next call of 'rxvtSend' opens a new terminal and
+connects to it again. If you want to kill the child, call 'rxvtKill()'. 
+
+
+Python Functions:
+
+rxvtSend(text, cmd, newline=True, erase=True, reopen=False, chdir=False, rxvtOptions=""):
+
+		Send 'text' to the terminals child process 'cmd'. If no such process exists, 
+		a new child process will be spawned and a possible existing one will
+		be killed.
+
+		Optional arguments:
+		newline:		Append a newline after 'text' (default true)
+		erase:			Erase the current input line before sending 'text'.
+		reopen:			Close running terminal and reopen.
+
+		The following arguments	take only effect, if a new process will
+		be spawned:
+
+		chdir:			Run 'cmd' in the directory of the currently edited file.
+		rxvtOptions:	To be passed as commandline arguments to 'urxvt'.
+						Usefull values are    '-geometry ...' or '-hold'.
+
+rxvtClose()
+		Close the terminal window (child stays alive).
+
+rxvtKill()
+		Kill the child process, terminal terminates on its own.								
+
+getreg(arg)
+		|getreg| translated in python.
+
+expand(arg)
+		|expand| translated in python. 			 					  		 
+
+getline(arg)
+		|getline| translated in python.
+
+
+Examples: 
+
+      :python rxvtSend('import os', 'python')
+      :python rxvtSend('print "Hello " + os.getenv("USER")', 'python')
+
+      :python rxvtSend('execfile('+ expand('%:p') +')', 'python')
+      In other words:
+      :python rxvtSend('execfile(%s)' %expand('%:p'), 'python')
+
+If you like it fancy
+
+      :python rxvtSend('print "Hello" + os.getenv("USER")','python', reopen=True, rxvtOptions='-rv -bg red')
+
+Example snippet from my ~/.vimrc:
+
+  au FileType python 
+      \ map <buffer><F12> :update <bar> :python rxvtSend('execfile('+ expand('%:p') +')', 'python')<CR>
+  au FileType haskell
+      \ map <buffer><F12> :update <bar> :python rxvtSend(':l '+ expand('%:p'), 'ghci')<CR>
+
+  au FileType haskell
+      \ map <buffer><F11> :python rxvtSend(':t '+ expand('<cword>'), 'ghci')<CR>
+
+  au FileType haskell
+      \ vmap <buffer><F11> :python rxvtSend(':t '+ getreg('*'), 'ghci')<CR>
+
+Short info for python agnostics:
+
+	Be aware that the arguments of the functions above are either quoted
+	strings or boolean values: True or False (capitalized and unquoted). There
+	is no difference between single and double quotes (as long as they match:-).
+	String concatenation is done by '+'.
+
+
+"vim:tw=78:ts=8:noet:ft=help:ff=unix:

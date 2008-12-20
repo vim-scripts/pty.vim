@@ -1,0 +1,19 @@
+This is a mirror of http://www.vim.org/scripts/script.php?script_id=2493
+
+Remote terminal support for vim thanks to python.
+
+
+You need VIM with python support and urxvt (rxvt-unicode) to use this script.
+<http://software.schmorp.de/pkg/rxvt-unicode.html&gt;
+
+Furthermore this script only provides python functions, so some knowledge about
+this (very fine) language is usefull, but not required to benefit from it.
+
+Calling the python function rxvtSend('text','cmd') the first time will spawn
+a subprocesses given by the shell command 'cmd' in a new terminal window and
+pass 'text' to it. Subsequent calls with the same 'cmd' argument will send further
+text to the this subprocess. If you close the terminal window, the child
+process stays alive and the next call of 'rxvtSend' opens a new terminal and
+connects to it again. If you want to kill the child, call 'rxvtKill()'. 
+
+
